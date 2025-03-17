@@ -1,171 +1,216 @@
 import 'package:flutter/material.dart';
-import 'detail_screen.dart';
 
-class MyListView extends StatefulWidget {
-  const MyListView({super.key});
-
-  @override
-  State<MyListView> createState() => _MyListViewState();
+void main() {
+  runApp(const MaterialApp(home: ListviewDemo()));
 }
 
-class _MyListViewState extends State<MyListView> {
-  List<String> items = ["Item 1", "Item 2", "Item 3"];
-  List<String> filteredItems = [];
-  final TextEditingController _textController = TextEditingController();
-  final TextEditingController _searchController = TextEditingController();
+class ListviewDemo extends StatefulWidget {
+  const ListviewDemo({super.key});
 
   @override
-  void initState() {
-    super.initState();
-    filteredItems = items;
-  }
+  _ListViewDemo createState() => _ListViewDemo();
+}
 
-  void _addItem(String text) {
-    setState(() {
-      items.add(text);
-      _sortItemsAZ();
-    });
-  }
-
-  void _sortItemsAZ() {
-    setState(() {
-      items.sort();
-      filteredItems = items;
-    });
-  }
-
-  void _sortItemsZA() {
-    setState(() {
-      items.sort((a, b) => b.compareTo(a));
-      filteredItems = items;
-    });
-  }
-
-  void _filterItems(String query) {
-    setState(() {
-      filteredItems =
-          items
-              .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-              .toList();
-    });
-  }
-
-  void _showAddItemDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Add New Item"),
-          content: TextField(
-            controller: _textController,
-            decoration: const InputDecoration(hintText: "Enter item text"),
+class _ListViewDemo extends State<ListviewDemo> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('4 ListView Examples')),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // Hiển thị 2 cột
+            mainAxisSpacing: 8.0,
+            crossAxisSpacing: 8.0,
           ),
-          actions: [
-            TextButton(
+          children: [
+            ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ListViewPage()),
+                );
               },
-              child: const Text("Cancel"),
+              child: const Text('ListView'),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
-                _addItem(_textController.text);
-                _textController.clear();
-                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ListViewBuilderPage(),
+                  ),
+                );
               },
-              child: const Text("Add"),
+              child: const Text('ListView.builder'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ListViewSeparatedPage(),
+                  ),
+                );
+              },
+              child: const Text('ListView.separated'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ListViewCustomPage(),
+                  ),
+                );
+              },
+              child: const Text('ListView.custom'),
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
+}
+
+/// **1. ListView cơ bản**
+class ListViewPage extends StatelessWidget {
+  const ListViewPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("ListView Demo"),
-        backgroundColor: Colors.orange,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.sort_by_alpha),
-            onPressed: _sortItemsAZ,
-          ),
-          IconButton(icon: const Icon(Icons.sort), onPressed: _sortItemsZA),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                hintText: 'Search...',
-                border: OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              onChanged: _filterItems,
-            ),
-          ),
-        ),
-      ),
+      appBar: AppBar(title: const Text('ListView')),
       body: ListView(
-        children:
-            filteredItems
-                .map(
-                  (text) => MyListItem(
-                    text: text,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => DetailScreen(
-                                itemText: text,
-                                isFromGrid: false,
-                              ),
-                        ),
-                      );
-                    },
-                  ),
-                )
-                .toList(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddItemDialog,
-        backgroundColor: Colors.orange,
-        child: const Icon(Icons.add),
+        children: const [
+          ColoredListTile(
+            color: Colors.lightBlueAccent,
+            leading: Icon(Icons.star),
+            title: Text('Item 1'),
+          ),
+          ColoredListTile(
+            color: Colors.lightGreenAccent,
+            leading: Icon(Icons.star),
+            title: Text('Item 2'),
+          ),
+          ColoredListTile(
+            color: Colors.lightBlueAccent,
+            leading: Icon(Icons.star),
+            title: Text('Item 3'),
+          ),
+          ColoredListTile(
+            color: Colors.lightGreenAccent,
+            leading: Icon(Icons.star),
+            title: Text('Item 4'),
+          ),
+        ],
       ),
     );
   }
 }
 
-class MyListItem extends StatelessWidget {
-  final String text;
-  final VoidCallback onTap;
-
-  const MyListItem({super.key, required this.text, required this.onTap});
+/// **2. ListView.builder**
+class ListViewBuilderPage extends StatelessWidget {
+  const ListViewBuilderPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.black),
-          color: Colors.yellow,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        height: 100,
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        child: Center(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
+    return Scaffold(
+      appBar: AppBar(title: const Text('ListView.builder')),
+      body: ListView.builder(
+        itemCount: 50,
+        itemBuilder: (context, index) {
+          return ColoredListTile(
+            color:
+                index % 2 == 0
+                    ? Colors.lightBlueAccent
+                    : Colors.lightGreenAccent,
+            leading: const Icon(Icons.star),
+            title: Text('Item $index'),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// **3. ListView.separated**
+class ListViewSeparatedPage extends StatelessWidget {
+  const ListViewSeparatedPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('ListView.separated')),
+      body: ListView.separated(
+        itemCount: 20,
+        separatorBuilder: (context, index) => const Divider(),
+        itemBuilder: (context, index) {
+          return ColoredListTile(
+            color:
+                index % 2 == 0
+                    ? Colors.lightBlueAccent
+                    : Colors.lightGreenAccent,
+            leading: const Icon(Icons.label),
+            title: Text('Item $index'),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// **4. ListView.custom**
+class ListViewCustomPage extends StatelessWidget {
+  const ListViewCustomPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('ListView.custom')),
+      body: ListView.custom(
+        childrenDelegate: SliverChildBuilderDelegate((context, index) {
+          return ColoredListTile(
+            color:
+                index % 2 == 0
+                    ? Colors.lightBlueAccent
+                    : Colors.lightGreenAccent,
+            leading: const Icon(Icons.book),
+            title: Text('Custom Item $index'),
+          );
+        }, childCount: 30),
+      ),
+    );
+  }
+}
+
+// Widget tùy chỉnh để thêm màu nền cho ListTile
+class ColoredListTile extends StatelessWidget {
+  final Color color;
+  final Widget? leading;
+  final Widget title;
+  final Widget? subtitle;
+  final Widget? trailing;
+
+  const ColoredListTile({
+    super.key,
+    required this.color,
+    this.leading,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: color,
+      child: ListTile(
+        leading: leading,
+        title: title,
+        subtitle: subtitle,
+        trailing: trailing,
       ),
     );
   }
