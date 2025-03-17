@@ -78,7 +78,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const MyGridView()),
+                  MaterialPageRoute(builder: (context) => const GridViewDemo()),
                 );
               },
               child: const Text("GridView Demo"),

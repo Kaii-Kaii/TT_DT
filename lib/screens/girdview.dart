@@ -1,88 +1,146 @@
 import 'package:flutter/material.dart';
-import 'detail_screen.dart';
 
-
-class MyGridView extends StatefulWidget {
-  const MyGridView({super.key});
+class GridViewDemo extends StatefulWidget {
+  const GridViewDemo({super.key});
 
   @override
-  State<MyGridView> createState() => _MyGridViewState();
+  _GridViewDemo createState() => _GridViewDemo();
 }
 
-class _MyGridViewState extends State<MyGridView> {
-  List<String> items = List.generate(25, (index) => "Ô ${index + 1}");
-
-  void _addItem() {
-    setState(() {
-      items.add("Ô ${items.length + 1}");
-    });
-  }
-
+class _GridViewDemo extends State<GridViewDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("GridView 5x5"),
-        backgroundColor: Colors.orange,
-      ),
+      appBar: AppBar(title: const Text('3 GridView Examples')),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: GridView.builder(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 5, // 5 cột
-            crossAxisSpacing: 5, // Khoảng cách giữa các cột
-            mainAxisSpacing: 5, // Khoảng cách giữa các hàng
+            crossAxisCount: 2, // Hiển thị 2 cột
+            mainAxisSpacing: 8.0,
+            crossAxisSpacing: 8.0,
           ),
-          itemCount: items.length, // Số lượng ô sẽ thay đổi khi thêm
-          itemBuilder: (context, index) {
-            return GridItem(
-              text: items[index],
-              onTap: () {
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GridViewCountPage()),
+                );
+              },
+              child: const Text('GridView.count'),
+            ),
+            ElevatedButton(
+              onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DetailScreen(
-                      itemText: items[index],
-                      isFromGrid: true,
-                    ),
+                    builder: (context) => const GridViewBuilderPage(),
                   ),
                 );
               },
-            );
-          },
+              child: const Text('GridView.builder'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const GridViewExtentPage(),
+                  ),
+                );
+              },
+              child: const Text('GridView.extent'),
+            ),
+          ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addItem,
-        backgroundColor: Colors.orange,
-        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
-
-class GridItem extends StatelessWidget {
-  final String text;
-  final VoidCallback onTap;
-
-  const GridItem({super.key, required this.text, required this.onTap});
+/// **1. GridView.count**
+class GridViewCountPage extends StatelessWidget {
+  const GridViewCountPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.black),
-          color: Colors.yellow,
-          borderRadius: BorderRadius.circular(10),
+    return Scaffold(
+      appBar: AppBar(title: const Text('GridView.count')),
+      body: GridView.count(
+        crossAxisCount: 2,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        padding: const EdgeInsets.all(8),
+        children: List.generate(10, (index) {
+          return ColoredGridTile(title: 'Item $index');
+        }),
+      ),
+    );
+  }
+}
+
+/// **2. GridView.builder**
+class GridViewBuilderPage extends StatelessWidget {
+  const GridViewBuilderPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('GridView.builder')),
+      body: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
         ),
-        alignment: Alignment.center,
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
+        itemCount: 20,
+        itemBuilder: (context, index) {
+          return ColoredGridTile(title: 'Item $index');
+        },
+      ),
+    );
+  }
+}
+
+/// **3. GridView.extent**
+class GridViewExtentPage extends StatelessWidget {
+  const GridViewExtentPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('GridView.extent')),
+      body: GridView.extent(
+        maxCrossAxisExtent: 150,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        padding: const EdgeInsets.all(8),
+        children: List.generate(15, (index) {
+          return ColoredGridTile(title: 'Item $index');
+        }),
+      ),
+    );
+  }
+}
+
+// Widget tùy chỉnh để thêm màu nền cho GridTile
+class ColoredGridTile extends StatelessWidget {
+  final String title;
+
+  const ColoredGridTile({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.lightBlueAccent,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
       ),
     );
   }
